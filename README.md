@@ -1,5 +1,5 @@
 # digital-jackson-pollack
-## Generate digital pixel splatters with Python and [Pillow(Python Image Library)](https://github.com/python-pillow/Pillow)
+## Generate digital pixel splatters with Python and [Pillow](https://github.com/python-pillow/Pillow)(Python Image Library)
 
 ## ![alt text](convergence.png)
 
