@@ -9,8 +9,8 @@
 
 ### You can also generate canvases with random color combinations.
 
-### ![alt text](random_colors_0.png)  ![alt text](random_colors_1.png)  ![alt text](random_colors_2.png)  
-### ![alt text](random_colors_3.png)  ![alt text](random_colors_4.png)  ![alt text](random_colors_5.png)  
+### ![alt text](random_colors_0.png)      ![alt text](random_colors_2.png)
+### ![alt text](random_colors_4.png)      ![alt text](random_colors_5.png)
 
 ### Future iterations will not be limited straight lines, hopefully I will incorporate splines soon to get splatters that are more Pollack-esque.  
 
