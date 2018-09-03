@@ -93,7 +93,7 @@ def jackson_pollack(width, height, num_colors, num_splatters):
 
 
 
-def createPollackImage(canvas=[[]], palette=[]):
+def create_pollack_image(canvas=[[]], palette=[]):
       
     #if canvas palette are both NOT passed as arguments
     if (canvas == [[]]) & (palette == []):
@@ -126,7 +126,7 @@ def createPollackImage(canvas=[[]], palette=[]):
 
 
 
-def addBorderToImage(image, border_size=30, color=(255,255,255), inplace=True):
+def add_border_to_image(image, border_size=30, color=(255,255,255), inplace=True):
 
     width = image.size[0]
     height = image.size[1]
