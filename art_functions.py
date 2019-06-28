@@ -60,13 +60,14 @@ def paint_line_curved(canvas, color):
         canvas[int(math.floor(x2[i]))][int(math.floor(y2[i]))] = color
 
 
-def paint_splat(canvas, color):
+def scribble(canvas, color):
     num_points = np.random.randint(3, 6)
     splat_width = 4
     splat_height = 20
+    x_neighbor_width = 80
 
     x = np.random.randint(0, canvas.shape[0], size=num_points)
-    while ((min(abs(np.ediff1d(x))) < 20) | 
+    while ((min(abs(np.ediff1d(x))) < x_neighbor_width) |
             (max(x) - min(x) <= ((splat_width + 1) * num_points)) |
             (x.shape[0] != np.unique(x).shape[0]) | 
             (x[1] - x[0] <= splat_width) |
@@ -116,7 +117,7 @@ def get_random_colors(num_colors):
         palette: An array that contains arrays of 3 RGB values, integers between 0 and 255
     """
     palette = []
-    for swatch in range(0, num_colors):
+    for swatch in range(0, num_colors + 1):
         color = 'hsl('
         #hue
         color += str(rand.uniform(0, 360)) + ','
@@ -127,6 +128,19 @@ def get_random_colors(num_colors):
         palette.append(color)
 
     return palette
+
+
+def get_similar_color(hsl_color_str):
+    color_dif = .04
+    h = float(hsl_color_str.split(',')[0][4:]) * \
+        rand.uniform(1 - color_dif, 1 + color_dif)
+    s = float(hsl_color_str.split(',')[1][:-1]) * \
+        rand.uniform(1 - color_dif, 1 + color_dif)
+    l = float(hsl_color_str.split(',')[2][:-2]) * \
+        rand.uniform(1 - (color_dif/2), 1 + (color_dif/2))
+
+    return 'hsl(' + str(h) + ',' + str(s) + '%,' + str(l) + '%)'
+
 
 
 
@@ -144,6 +158,7 @@ def jackson_pollack(width, height, num_colors, num_splatters):
         canvas (2-D numpy array): A numpy array of (width, height) dimensions
     """
 
+    # canvas = np.full((width, height), -1, dtype=int)
     canvas = np.zeros((width, height), dtype=int)
 
     for i in range(0, num_splatters):
@@ -152,17 +167,18 @@ def jackson_pollack(width, height, num_colors, num_splatters):
         x1 = rand.randint(0, width - 1)
         y1 = rand.randint(0, height - 1)
 
-        color = rand.uniform(0, num_colors-1)
-        paint_line(canvas, x0, y0, x1, y1, color)
+        color = rand.uniform(1, num_colors)
+        scribble(canvas, x0, y0, x1, y1, color)
 
     return canvas
 
 
 def cy_twombly(width, height, num_colors, num_splatters):
+    # canvas = np.full((width, height), -1, dtype=int)
     canvas = np.zeros((width, height), dtype=int)
 
     for x in range(0, num_splatters):
-        color = rand.randint(0, num_colors-1)
+        color = rand.randint(1, num_colors)
         paint_splat(canvas, color)
 
     return canvas
@@ -184,17 +200,22 @@ def canvas_to_image(canvas=[[]], palette=[]):
         palette = get_random_colors(len(np.unique(canvas)))
 
     #create image
-    image = Image.new('RGB', (canvas.shape[0], canvas.shape[1]))
+    image = Image.new('RGB', (canvas.shape))
 
-    if len(np.unique(canvas)) > len(palette):
+    if len(np.unique(canvas)) + 1 > len(palette):
         print('WARNING: There are more colors on your canvas than in your palette.  This will increase the splatters of the first colors in your palette.')
-    if len(np.unique(canvas)) < len(palette):
+    if len(np.unique(canvas)) + 1 < len(palette):
         print('WARNING: Your palette has more colors than your canvas.  Some of your colors will not be splattered on your canvas.')
 
     #write each pixel
     for (x, y), value in np.ndenumerate(canvas):
-        pixel_coordinate = palette[(canvas[x][y] % len(palette))]
-        image.putpixel((x, y), ImageColor.getrgb(pixel_coordinate))
+        if canvas[x][y] == 0:
+            image.putpixel((x, y), ImageColor.getrgb(
+                get_similar_color(palette[0])))
+        else:
+            pixel_coordinate = palette[(canvas[x][y] % len(palette))]
+            image.putpixel((x, y), ImageColor.getrgb(pixel_coordinate))
+            
 
     return image
 
