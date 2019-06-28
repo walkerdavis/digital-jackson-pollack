@@ -15,6 +15,20 @@
 ### ![alt text](/masterpieces/random_colors_0.png)      ![alt text](/masterpieces/random_colors_2.png)
 ### ![alt text](/masterpieces/random_colors_4.png)      ![alt text](/masterpieces/random_colors_5.png)
 
+## Make some art!
+```
+conda create -n pollack python=3.7 anaconda
+```
+```
+source activate pollack
+```
+```
+cd <this repo>
+```
+```
+python generate_pollack.py <desired export location>
+```
+
 ### Lots of future ideas brewing, stayed tuned.
 
 

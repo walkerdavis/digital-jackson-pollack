@@ -157,8 +157,6 @@ def jackson_pollack(width, height, num_colors, num_splatters):
     Returns:
         canvas (2-D numpy array): A numpy array of (width, height) dimensions
     """
-
-    # canvas = np.full((width, height), -1, dtype=int)
     canvas = np.zeros((width, height), dtype=int)
 
     for i in range(0, num_splatters):
@@ -168,18 +166,17 @@ def jackson_pollack(width, height, num_colors, num_splatters):
         y1 = rand.randint(0, height - 1)
 
         color = rand.uniform(1, num_colors)
-        scribble(canvas, x0, y0, x1, y1, color)
+        paint_line(canvas, x0, y0, x1, y1, color)
 
     return canvas
 
 
 def cy_twombly(width, height, num_colors, num_splatters):
-    # canvas = np.full((width, height), -1, dtype=int)
     canvas = np.zeros((width, height), dtype=int)
 
     for x in range(0, num_splatters):
         color = rand.randint(1, num_colors)
-        paint_splat(canvas, color)
+        scribble(canvas, color)
 
     return canvas
 
