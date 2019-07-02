@@ -26,11 +26,10 @@ def paint_line(canvas, x0, y0, x1, y1, color):
     Returns:
         Nothing, but your canvas has a new line on it.
     """
-    hypotenuse = int(pow((pow(x0-x1, 2) + pow(y0-y1, 2)), 1/2))
-
+    num_points = max(abs(x0-x1), abs(y0-y1))
     #create the points at every pixel between each coordinate
-    xs = np.linspace(x0, x1, hypotenuse+2)
-    ys = np.linspace(y0, y1, hypotenuse+2)
+    xs = np.linspace(x0, x1, num_points)
+    ys = np.linspace(y0, y1, num_points)
 
     #do splatter
     for i in range(len(xs) - 1):
@@ -108,7 +107,7 @@ def scribble(canvas, color):
 
 def get_random_colors(num_colors):
     """
-    Generate RGB values of a specified amount of colors
+    Generate HSL values of a specified amount of colors
 
     Args:
         num_colors: Integer of how many colors you would like
@@ -118,28 +117,37 @@ def get_random_colors(num_colors):
     """
     palette = []
     for swatch in range(0, num_colors + 1):
-        color = 'hsl('
+        color = []
         #hue
-        color += str(rand.uniform(0, 360)) + ','
+        color.append(rand.uniform(0, 360))
         #saturation
-        color += str(rand.uniform(0, 100)) + '%,'
+        color.append(rand.uniform(0, 100))
         #lightness
-        color += str(rand.uniform(0, 100)) + '%)'
+        color.append(rand.uniform(0, 100))
         palette.append(color)
 
     return palette
 
 
-def get_similar_color(hsl_color_str):
-    color_dif = .04
-    h = float(hsl_color_str.split(',')[0][4:]) * \
-        rand.uniform(1 - color_dif, 1 + color_dif)
-    s = float(hsl_color_str.split(',')[1][:-1]) * \
-        rand.uniform(1 - color_dif, 1 + color_dif)
-    l = float(hsl_color_str.split(',')[2][:-2]) * \
-        rand.uniform(1 - (color_dif/2), 1 + (color_dif/2))
+def get_color_str(color_list):
+    # print(len(color_list))
 
-    return 'hsl(' + str(h) + ',' + str(s) + '%,' + str(l) + '%)'
+    color_str = 'hsl('
+    color_str += str(color_list[0]) + ','
+    color_str += str(color_list[1]) + '%,'
+    color_str += str(color_list[2]) + '%)'
+
+    return color_str
+
+
+def get_similar_color(hsl_color):
+    color_dif = .04
+    new_color = []
+    new_color.append(hsl_color[0] * rand.uniform(1 - color_dif, 1 + color_dif))
+    new_color.append(hsl_color[1] * rand.uniform(1 - color_dif, 1 + color_dif))
+    new_color.append(hsl_color[2] * rand.uniform(1 - (color_dif/2), 1 + (color_dif/2)))
+
+    return new_color
 
 
 
@@ -167,6 +175,8 @@ def jackson_pollack(width, height, num_colors, num_splatters):
 
         color = rand.uniform(1, num_colors)
         paint_line(canvas, x0, y0, x1, y1, color)
+
+    print(canvas[:5,:5])
 
     return canvas
 
@@ -208,10 +218,11 @@ def canvas_to_image(canvas=[[]], palette=[]):
     for (x, y), value in np.ndenumerate(canvas):
         if canvas[x][y] == 0:
             image.putpixel((x, y), ImageColor.getrgb(
-                get_similar_color(palette[0])))
+                get_color_str(get_similar_color(palette[0]))))
         else:
-            pixel_coordinate = palette[(canvas[x][y] % len(palette))]
-            image.putpixel((x, y), ImageColor.getrgb(pixel_coordinate))
+            pixel_str= get_color_str(palette[(canvas[x][y] % len(palette))])
+            # print(pixel_str)
+            image.putpixel((x, y), ImageColor.getrgb(pixel_str))
             
 
     return image
