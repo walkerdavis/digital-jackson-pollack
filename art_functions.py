@@ -176,8 +176,6 @@ def jackson_pollack(width, height, num_colors, num_splatters):
         color = rand.uniform(1, num_colors)
         paint_line(canvas, x0, y0, x1, y1, color)
 
-    print(canvas[:5,:5])
-
     return canvas
 
 
@@ -209,9 +207,9 @@ def canvas_to_image(canvas=[[]], palette=[]):
     #create image
     image = Image.new('RGB', (canvas.shape))
 
-    if len(np.unique(canvas)) + 1 > len(palette):
+    if len(np.unique(canvas)) > len(palette) + 1:
         print('WARNING: There are more colors on your canvas than in your palette.  This will increase the splatters of the first colors in your palette.')
-    if len(np.unique(canvas)) + 1 < len(palette):
+    if len(np.unique(canvas)) < len(palette) + 1:
         print('WARNING: Your palette has more colors than your canvas.  Some of your colors will not be splattered on your canvas.')
 
     #write each pixel
