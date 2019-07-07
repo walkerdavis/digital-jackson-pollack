@@ -47,6 +47,13 @@ parser.add_argument(
     type=str,
     default='')
 
+parser.add_argument(
+    '--gif',
+    help='Export images of individual splats to gif-ify',
+    type=str,
+    default='')
+
+
 args = parser.parse_args()
 
 EXPORT_DIR = args.export_loc
@@ -56,6 +63,10 @@ COLORS =args.colors
 SPLATS = args.splats
 WORKS = args.works
 BORDER = (args.border != '')
+GIF = (args.gif != '')
+
+if GIF:
+    WORKS = 1
 
 def make_dir(dir_str):
     if not os.path.exists(dir_str):
@@ -69,11 +80,36 @@ def get_date_time_str():
 POLLACK_DIR = os.path.join(EXPORT_DIR, 'POLLACK/')
 make_dir(POLLACK_DIR)
 
-for i in range(WORKS):
-    canvas = jackson_pollack(W, H, COLORS, SPLATS)
-    picture_random_colors = canvas_to_image(canvas=canvas)
 
-    if BORDER:
-        add_border_to_image(picture_random_colors, inplace=True)
+if not GIF:
+    for i in range(WORKS):
+        canvas = jackson_pollack(W, H, COLORS, SPLATS)
+        picture_random_colors = canvas_to_image(canvas=canvas)
 
-    picture_random_colors.save(POLLACK_DIR + 'POLLACK_' + get_date_time_str() + '.png', 'PNG')
+        if BORDER:
+            add_border_to_image(picture_random_colors, inplace=True)
+
+        picture_random_colors.save(
+            POLLACK_DIR + 'POLLACK_' + get_date_time_str() + '.png', 'PNG')
+
+else:
+    CANVAS = np.zeros((W, H),dtype=int)
+    PALETTE = get_random_colors(COLORS)
+
+    for i in range(SPLATS):
+
+        num_str = '00000'
+        i_len = len(str(i))
+        num_str = num_str[:-i_len]
+        num_str += str(i)
+
+        x0 = rand.randint(0, W - 1)
+        y0 = rand.randint(0, H - 1)
+        x1 = rand.randint(0, W - 1)
+        y1 = rand.randint(0, H - 1)
+
+        color = rand.uniform(1, COLORS)
+        paint_line(CANVAS, x0, y0, x1, y1, color)
+        temp_canvas = canvas_to_image(CANVAS,PALETTE)
+        temp_canvas.save(POLLACK_DIR + 'POLLACK_' +
+                         num_str + '.png', 'PNG')

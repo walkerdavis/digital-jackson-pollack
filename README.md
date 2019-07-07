@@ -15,6 +15,10 @@
 ### ![alt text](/masterpieces/random_colors_0.png)      ![alt text](/masterpieces/random_colors_2.png)
 ### ![alt text](/masterpieces/random_colors_4.png)      ![alt text](/masterpieces/random_colors_5.png)
 
+### And make gif's using my other [repo](https://github.com/walkerdavis/producerpy)'s [giffer.py](https://github.com/walkerdavis/producerpy/blob/master/giffer.py) script.
+
+### ![alt text](/masterpieces/POLLACK_gif.gif)
+
 ## Make some art!
 ```
 conda create -n pollack python=3.7 anaconda
