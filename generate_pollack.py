@@ -15,13 +15,13 @@ parser.add_argument(
     '--width',
     help='Width of masterpiece',
     type=int,
-    default=800)
+    default=300)#800)
 
 parser.add_argument(
     '--height',
     help='Height of masterpiece',
     type=int,
-    default=482)
+    default=300)#482)
 
 parser.add_argument(
     '--colors',
@@ -34,6 +34,18 @@ parser.add_argument(
     help='Number of paint splats',
     type=int,
     default=2000)
+
+parser.add_argument(
+    '--layers',
+    help='Number of layers to apply splats in (divides splats into passes)',
+    type=int,
+    default=1)
+
+parser.add_argument(
+    '--alpha',
+    help='Alpha transparency value (0-255, 255=opaque)',
+    type=int,
+    default=255)
 
 parser.add_argument(
     '--works',
@@ -61,6 +73,13 @@ W = args.width
 H = args.height
 COLORS =args.colors
 SPLATS = args.splats
+LAYERS = args.layers
+ALPHA = args.alpha
+
+# When using layers, automatically enable transparency if alpha not explicitly set
+if LAYERS > 1 and ALPHA == 255:
+    ALPHA = 200  # Semi-transparent for layered effect
+
 WORKS = args.works
 BORDER = (args.border != '')
 GIF = (args.gif != '')
@@ -78,13 +97,14 @@ def get_date_time_str():
         a.minute) + '_' + str(a.second) + '_' + str(a.microsecond) + '_'
 
 POLLACK_DIR = os.path.join(EXPORT_DIR, 'POLLACK/')
-make_dir(POLLACK_DIR)
 
+# Create the directory if it doesn't exist
+os.makedirs(POLLACK_DIR, exist_ok=True)
 
 if not GIF:
     for i in range(WORKS):
-        canvas = jackson_pollack(W, H, COLORS, SPLATS)
-        picture_random_colors = canvas_to_image(canvas=canvas)
+        canvas, layer_canvas = jackson_pollack2(W, H, COLORS, SPLATS, LAYERS)
+        picture_random_colors = canvas_to_image(canvas=canvas, alpha=ALPHA, layer_canvas=layer_canvas if LAYERS > 1 else None)
 
         if BORDER:
             add_border_to_image(picture_random_colors, inplace=True)

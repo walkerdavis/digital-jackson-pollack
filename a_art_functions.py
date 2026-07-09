@@ -89,6 +89,73 @@ def jackson_pollack(width, height, num_colors, num_splatters):
     return canvas
 
 
+def jackson_pollack2(width, height, num_colors, num_splatters, num_layers=1):
+    """
+    Generate Jackson Pollack inspired digital canvas
+    
+    Args:
+        width (int): Width of canvas; number of columns in numpy array
+        height (int): Height of canvas; number of rows in numpy array
+        num_colors (int): Number of unique colors you would like for your canvas
+        num_splatters (int): Number of lines you would like on your canvas
+        num_layers (int): Number of layers/passes to apply splats in
+        
+    Returns:
+        canvas (2-D numpy array): A numpy array of (width, height) dimensions
+        layer_canvas (2-D numpy array): A numpy array tracking which layer each pixel belongs to
+    """
+    perimeter = 2
+    width += perimeter * 2
+    height += perimeter * 2
+    canvas = np.zeros((width, height), dtype=int)
+    layer_canvas = np.zeros((width, height), dtype=int)  # Track which layer each pixel belongs to
+    
+    # Divide splats across layers
+    splats_per_layer = num_splatters // num_layers
+    remainder = num_splatters % num_layers
+
+    def get_point_on_perimter(width, height, zone):
+        if zone == "top":
+            x = rand.randint(0, width - 1)
+            y = 0
+        elif zone == "bottom":
+            x = rand.randint(0, width - 1)
+            y = height - 1
+        elif zone == "left":
+            x = 0
+            y = rand.randint(0, height - 1)
+        elif zone == "right":
+            x = width - 1
+            y = rand.randint(0, height - 1)
+        else:
+            raise
+
+        return x, y
+
+    # Apply splats in layers
+    for layer in range(num_layers):
+        # Add remainder splats to last layer
+        layer_splats = splats_per_layer + (remainder if layer == num_layers - 1 else 0)
+        
+        for i in range(layer_splats):
+            zones = ["top", "bottom", "left", "right"]
+            zone0 = zones.pop(rand.randint(0, len(zones) - 1))
+            zone1 = zones.pop(rand.randint(0, len(zones) - 1))
+
+            x0, y0 = get_point_on_perimter(width, height, zone0)
+            x1, y1 = get_point_on_perimter(width, height, zone1)
+
+            color = rand.uniform(1, num_colors)
+            paint_line(canvas, x0, y0, x1, y1, color)
+            # Track which layer this pixel belongs to (update layer_canvas for painted pixels)
+            paint_line(layer_canvas, x0, y0, x1, y1, layer)
+
+    canvas = canvas[perimeter:width - perimeter, perimeter:height - perimeter]
+    layer_canvas = layer_canvas[perimeter:width - perimeter, perimeter:height - perimeter]
+    
+    return canvas, layer_canvas
+
+
 def cy_twombly(width, height, num_colors, num_splatters):
     canvas = np.zeros((width, height), dtype=int)
 
@@ -99,23 +166,24 @@ def cy_twombly(width, height, num_colors, num_splatters):
     return canvas
 
 
-def canvas_to_image(canvas=[[]], palette=[]):
+def canvas_to_image(canvas=None, palette=None, alpha=255, layer_canvas=None):
 
     #if canvas palette are both NOT passed as arguments
-    if (canvas == [[]]) & (palette == []):
+    if canvas is None and palette is None:
         canvas = jackson_pollack(255, 255, 8, 5000)
         palette = get_random_colors(8)
 
     #if canvas is not passed but palette is
-    elif (canvas == [[]]) & (palette != []):
+    elif canvas is None and palette is not None:
         canvas = jackson_pollack(255, 255, len(palette), 5000)
 
     #if canvas is passed but palette is not
-    elif (canvas != [[]]) & (palette == []):
+    elif canvas is not None and palette is None:
         palette = get_random_colors(len(np.unique(canvas)))
 
-    #create image
-    image = Image.new('RGB', (canvas.shape))
+    #create image with alpha channel if alpha < 255 or layer_canvas provided
+    mode = 'RGBA' if (alpha < 255 or layer_canvas is not None) else 'RGB'
+    image = Image.new(mode, (canvas.shape))
 
     if len(np.unique(canvas)) > len(palette) + 1:
         print('WARNING: There are more colors on your canvas than in your palette.  This will increase the splatters of the first colors in your palette.')
@@ -125,11 +193,22 @@ def canvas_to_image(canvas=[[]], palette=[]):
     #write each pixel
     for (x, y), value in np.ndenumerate(canvas):
         if canvas[x][y] == 0:
-            image.putpixel((x, y), ImageColor.getrgb(
-                get_color_str(get_similar_color(palette[0]))))
+            rgb = ImageColor.getrgb(get_color_str(get_similar_color(palette[0])))
         else:
-            pixel_str= get_color_str(palette[(canvas[x][y] % len(palette))])
-            image.putpixel((x, y), ImageColor.getrgb(pixel_str))
+            pixel_str = get_color_str(palette[(canvas[x][y] % len(palette))])
+            rgb = ImageColor.getrgb(pixel_str)
+        
+        # Determine alpha value for this pixel
+        if mode == 'RGBA':
+            if layer_canvas is not None:
+                # Bottom layer (0) is fully opaque, upper layers use the specified alpha
+                pixel_layer = int(layer_canvas[x][y])
+                pixel_alpha = 255 if pixel_layer == 0 else alpha
+            else:
+                pixel_alpha = alpha
+            image.putpixel((x, y), rgb + (pixel_alpha,))
+        else:
+            image.putpixel((x, y), rgb)
             
 
     return image
