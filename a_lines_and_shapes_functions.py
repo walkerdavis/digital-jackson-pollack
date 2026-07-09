@@ -6,7 +6,6 @@ functions for digital jackson pollacks
 walker davis
 """
 
-from PIL import Image, ImageDraw, ImageColor
 import math
 import numpy as np
 import random as rand
@@ -205,7 +204,7 @@ def curved_line(x0, x1, y0, angle=0, x_spread=4, y_spread=20, num_points=0):
     y2 = interpolate.pchip_interpolate(x, y, x2[indices])
 
     vx, vy = [], []
-    for i in range(len(hx)-1):
+    for i in range(len(x2)-1):
         coord = rotate((x0, y0), (x2[i], y2[i]), math.radians(angle))
         vx.append(coord[0])
         vy.append(coord[1])

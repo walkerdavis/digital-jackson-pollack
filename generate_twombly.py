@@ -1,4 +1,4 @@
-from a_art_functions import *
+from a_art_functions import add_border_to_image, canvas_to_image, cy_twombly
 from argparse import ArgumentParser
 import os
 import datetime
@@ -70,7 +70,7 @@ def get_date_time_str():
 
 
 TWOMBLY_DIR = os.path.join(EXPORT_DIR, 'TWOMBLY/')
-make_dir(TWOMBLY_DIR)
+os.makedirs(TWOMBLY_DIR, exist_ok=True)
 
 for i in range(WORKS):
     canvas = cy_twombly(W, H, COLORS, SPLATS)
