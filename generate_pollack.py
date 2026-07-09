@@ -1,4 +1,14 @@
-from a_art_functions import *
+import random as rand
+
+import numpy as np
+
+from a_art_functions import (
+    add_border_to_image,
+    canvas_to_image,
+    get_random_colors,
+    jackson_pollack2,
+    paint_line,
+)
 from argparse import ArgumentParser
 import os
 import datetime

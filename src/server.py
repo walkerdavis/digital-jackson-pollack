@@ -102,8 +102,8 @@ def pollack_endpoint() -> Response:
 
     try:
         image = _generate_pollack_image(
-            width=data.get("width", 300),
-            height=data.get("height", 300),
+            width=data.get("width", 800),
+            height=data.get("height", 482),
             num_colors=data.get("colors", 8),
             num_splats=data.get("splats", 2000),
             num_layers=data.get("layers", 1),

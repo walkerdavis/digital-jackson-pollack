@@ -9,7 +9,6 @@ from PIL import Image, ImageColor
 import math
 import numpy as np
 import random as rand
-from scipy import interpolate
 import os
 from datetime import datetime
 

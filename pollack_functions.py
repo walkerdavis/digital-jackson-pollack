@@ -9,7 +9,7 @@ walker davis
 import numpy as np
 import math
 import random
-from PIL import Image, ImageDraw
+from PIL import Image
 
 
 def paint_line(canvas, x0, y0, x1, y1, color):

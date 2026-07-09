@@ -1,4 +1,4 @@
-from a_art_functions import *
+from a_art_functions import add_border_to_image, canvas_to_image, cy_twombly
 from argparse import ArgumentParser
 import os
 import datetime

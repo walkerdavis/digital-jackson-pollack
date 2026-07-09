@@ -6,6 +6,7 @@ build/
 .venv/
 venv/
 .env
+*.png
 *.DS_Store
 .vscode/
 .idea/

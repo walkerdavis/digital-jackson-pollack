@@ -6,13 +6,11 @@ functions for digital jackson pollacks
 walker davis
 """
 
-from PIL import Image, ImageDraw, ImageColor
-import math
+from PIL import Image, ImageColor
 import numpy as np
 import random as rand
-from scipy import interpolate
 
-from a_lines_and_shapes_functions import *
+from a_lines_and_shapes_functions import paint_line, scribble
 
 
 def get_random_colors(num_colors):
