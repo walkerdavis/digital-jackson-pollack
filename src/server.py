@@ -12,6 +12,9 @@ from flask_cors import CORS
 from src.canvas import cy_twombly, jackson_pollack
 from src.image import add_border_to_image, canvas_to_image
 
+DEFAULT_WIDTH = 800
+DEFAULT_HEIGHT = 482
+
 TEMP_OUTPUT_DIR = Path(tempfile.gettempdir()) / "pollack-api"
 TEMP_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -102,8 +105,8 @@ def pollack_endpoint() -> Response:
 
     try:
         image = _generate_pollack_image(
-            width=data.get("width", 800),
-            height=data.get("height", 482),
+            width=data.get("width", DEFAULT_WIDTH),
+            height=data.get("height", DEFAULT_HEIGHT),
             num_colors=data.get("colors", 8),
             num_splats=data.get("splats", 2000),
             num_layers=data.get("layers", 1),
@@ -123,8 +126,8 @@ def twombly_endpoint() -> Response:
 
     try:
         image = _generate_twombly_image(
-            width=data.get("width", 800),
-            height=data.get("height", 482),
+            width=data.get("width", DEFAULT_WIDTH),
+            height=data.get("height", DEFAULT_HEIGHT),
             num_colors=data.get("colors", 8),
             num_splats=data.get("splats", 20),
             add_border=data.get("border", False),
