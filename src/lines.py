@@ -42,7 +42,9 @@ def scribble(canvas, color):
     splat_height = 20
     x_neighbor_width = 80
 
+    max_attempts = 5000
     x = np.random.randint(0, canvas.shape[0], size=num_points)
+    attempts = 0
     while (
         (min(abs(np.ediff1d(x))) < x_neighbor_width)
         | (max(x) - min(x) <= ((splat_width + 1) * num_points))
@@ -51,6 +53,10 @@ def scribble(canvas, color):
         | (x[-1] - x[-2] <= splat_width)
     ):
         x = np.random.randint(0, canvas.shape[0], size=num_points)
+        attempts += 1
+        if attempts >= max_attempts:
+            x = np.linspace(0, canvas.shape[0] - 1, num_points, dtype=int)
+            break
     x.sort()
     y = np.random.randint(0, canvas.shape[1], size=num_points)
 
